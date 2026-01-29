@@ -1,0 +1,41 @@
+{
+  "name": "@migrationpilot/parsers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Legacy language parsers for MigrationPilot",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./cobol": {
+      "import": "./dist/cobol/index.js",
+      "types": "./dist/cobol/index.d.ts"
+    },
+    "./fortran": {
+      "import": "./dist/fortran/index.js",
+      "types": "./dist/fortran/index.d.ts"
+    },
+    "./vb6": {
+      "import": "./dist/vb6/index.js",
+      "types": "./dist/vb6/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@migrationpilot/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "@migrationpilot/agents",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Agents for MigrationPilot using GitHub Copilot SDK",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./archeologist": {
+      "import": "./dist/archeologist/index.js",
+      "types": "./dist/archeologist/index.d.ts"
+    },
+    "./architect": {
+      "import": "./dist/architect/index.js",
+      "types": "./dist/architect/index.d.ts"
+    },
+    "./builder": {
+      "import": "./dist/builder/index.js",
+      "types": "./dist/builder/index.d.ts"
+    },
+    "./validator": {
+      "import": "./dist/validator/index.js",
+      "types": "./dist/validator/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@copilot-extensions/preview-sdk": "^5.0.0",
+    "@migrationpilot/core": "workspace:*",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  }
+}

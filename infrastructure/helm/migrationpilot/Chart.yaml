@@ -1,0 +1,14 @@
+apiVersion: v2
+name: migrationpilot
+description: MigrationPilot - AI-Powered Legacy Code Modernization Platform
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - legacy-modernization
+  - cobol
+  - ai
+  - migration
+maintainers:
+  - name: Jose David Baena
+    email: jose@migrationpilot.io

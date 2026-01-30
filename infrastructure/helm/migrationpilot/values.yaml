@@ -1,0 +1,170 @@
+# Default values for migrationpilot
+replicaCount:
+  api: 2
+  web: 2
+
+image:
+  repository: ghcr.io/your-org/migrationpilot
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+environment: staging
+
+# API Configuration
+api:
+  port: 4000
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  env:
+    LOG_LEVEL: info
+    NODE_ENV: production
+
+# Web Configuration
+web:
+  port: 3000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  env:
+    NODE_ENV: production
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod Security
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+# Services
+service:
+  type: ClusterIP
+  api:
+    port: 4000
+  web:
+    port: 3000
+
+# Ingress
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /api/health
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+  hosts:
+    - host: migrationpilot.example.com
+      paths:
+        - path: /api
+          pathType: Prefix
+          service: api
+        - path: /
+          pathType: Prefix
+          service: web
+  tls: []
+
+# Autoscaling
+autoscaling:
+  enabled: true
+  api:
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  web:
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Database
+database:
+  host: ""
+  port: 5432
+  name: migrationpilot
+  username: migrationpilot
+  existingSecret: migrationpilot-db-credentials
+  existingSecretKey: password
+
+# Redis
+redis:
+  host: ""
+  port: 6379
+
+# S3/MinIO
+storage:
+  endpoint: ""
+  bucket: migrationpilot
+  existingSecret: migrationpilot-s3-credentials
+  accessKeySecretKey: accessKey
+  secretKeySecretKey: secretKey
+
+# Secrets
+secrets:
+  github:
+    existingSecret: migrationpilot-github
+    tokenKey: token
+  auth:
+    existingSecret: migrationpilot-auth
+    secretKey: secret
+
+# Node Affinity
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Probes
+livenessProbe:
+  httpGet:
+    path: /api/health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /api/health/ready
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Metrics
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+    interval: 30s

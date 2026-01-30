@@ -1,0 +1,45 @@
+FROM node:20-alpine AS base
+
+# Install pnpm
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/core/package.json ./packages/core/
+COPY packages/agents/package.json ./packages/agents/
+COPY packages/parsers/package.json ./packages/parsers/
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy source
+COPY packages/ ./packages/
+COPY apps/api/ ./apps/api/
+
+# Build
+RUN pnpm --filter @migrationpilot/core build
+RUN pnpm --filter @migrationpilot/parsers build
+RUN pnpm --filter @migrationpilot/agents build
+RUN pnpm --filter @migrationpilot/api build
+
+# Production image
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/packages/core/dist ./packages/core/dist
+COPY --from=base /app/packages/core/package.json ./packages/core/
+COPY --from=base /app/packages/parsers/dist ./packages/parsers/dist
+COPY --from=base /app/packages/parsers/package.json ./packages/parsers/
+COPY --from=base /app/packages/agents/dist ./packages/agents/dist
+COPY --from=base /app/packages/agents/package.json ./packages/agents/
+COPY --from=base /app/apps/api/dist ./apps/api/dist
+COPY --from=base /app/apps/api/package.json ./apps/api/
+
+EXPOSE 4000
+
+CMD ["node", "apps/api/dist/index.js"]

@@ -1,0 +1,247 @@
+{
+  "projectId": "banking-demo",
+  "description": "Sample behavioral models for banking system business rules",
+  "models": [
+    {
+      "id": "model-interest-calc",
+      "name": "Interest Calculation Model",
+      "ruleId": "interest-calc",
+      "version": 3,
+      "description": "Behavioral model for savings account interest calculation",
+      "modelType": "statistical",
+      
+      "inputSignature": {
+        "balance": {
+          "type": "number",
+          "range": {"min": 0, "max": 10000000},
+          "distribution": "log_normal",
+          "mean": 15234.56,
+          "stdDev": 45000
+        },
+        "accountType": {
+          "type": "string",
+          "values": ["SAVINGS", "CHECKING", "MONEY_MARKET"],
+          "distribution": {"SAVINGS": 0.45, "CHECKING": 0.40, "MONEY_MARKET": 0.15}
+        },
+        "daysInPeriod": {
+          "type": "number",
+          "range": {"min": 28, "max": 31},
+          "values": [28, 29, 30, 31]
+        }
+      },
+      
+      "outputSignature": {
+        "interest": {
+          "type": "number",
+          "range": {"min": 0, "max": 50000},
+          "precision": 2
+        },
+        "newBalance": {
+          "type": "number",
+          "range": {"min": 0, "max": 10050000},
+          "precision": 2
+        }
+      },
+      
+      "invariants": [
+        {
+          "id": "inv-001",
+          "type": "range",
+          "description": "Interest is always non-negative",
+          "expression": "interest >= 0",
+          "confidence": 1.0,
+          "supportCount": 45234,
+          "coverage": 1.0
+        },
+        {
+          "id": "inv-002",
+          "type": "ratio",
+          "description": "New balance equals old balance plus interest",
+          "expression": "newBalance == balance + interest",
+          "confidence": 1.0,
+          "supportCount": 45234,
+          "coverage": 1.0,
+          "tolerance": 0.01
+        },
+        {
+          "id": "inv-003",
+          "type": "formula",
+          "description": "Interest follows standard calculation",
+          "expression": "interest == balance * rate * (daysInPeriod / 365)",
+          "confidence": 0.98,
+          "supportCount": 44329,
+          "coverage": 0.98,
+          "tolerance": 0.01
+        },
+        {
+          "id": "inv-004",
+          "type": "conditional",
+          "description": "Minimum balance requirement for interest",
+          "expression": "if balance < 100 then interest == 0",
+          "confidence": 1.0,
+          "supportCount": 1205,
+          "coverage": 0.027
+        },
+        {
+          "id": "inv-005",
+          "type": "correlation",
+          "description": "Higher balance correlates with higher interest",
+          "expression": "correlation(balance, interest) > 0.95",
+          "confidence": 0.99,
+          "supportCount": 45234,
+          "coverage": 1.0
+        }
+      ],
+      
+      "constraints": [
+        {
+          "id": "con-001",
+          "type": "input",
+          "description": "Balance must be non-negative",
+          "expression": "balance >= 0",
+          "enforced": true
+        },
+        {
+          "id": "con-002",
+          "type": "input",
+          "description": "Account type must be valid",
+          "expression": "accountType in ['SAVINGS', 'CHECKING', 'MONEY_MARKET']",
+          "enforced": true
+        }
+      ],
+      
+      "edgeCases": [
+        {
+          "id": "edge-001",
+          "description": "Zero balance account",
+          "inputs": {"balance": 0, "accountType": "SAVINGS", "daysInPeriod": 30},
+          "expectedOutput": {"interest": 0, "newBalance": 0},
+          "frequency": 0.02
+        },
+        {
+          "id": "edge-002",
+          "description": "Maximum balance tier",
+          "inputs": {"balance": 9999999.99, "accountType": "MONEY_MARKET", "daysInPeriod": 31},
+          "expectedOutput": {"interest": 25479.45, "newBalance": 10025479.44},
+          "frequency": 0.001
+        },
+        {
+          "id": "edge-003",
+          "description": "Leap year February",
+          "inputs": {"balance": 10000, "accountType": "SAVINGS", "daysInPeriod": 29},
+          "expectedOutput": {"interest": 1.99, "newBalance": 10001.99},
+          "frequency": 0.003
+        }
+      ],
+      
+      "quality": {
+        "dataQuality": 0.95,
+        "patternConsistency": 0.98,
+        "invariantStrength": 0.92,
+        "edgeCaseCoverage": 0.85,
+        "overallConfidence": 0.93
+      },
+      
+      "trainingInfo": {
+        "dataSource": "historical_executions",
+        "startDate": "2023-01-01T00:00:00Z",
+        "endDate": "2024-01-15T00:00:00Z",
+        "sampleCount": 45234,
+        "trainingDuration": 12500
+      }
+    },
+    {
+      "id": "model-transfer-validation",
+      "name": "Transfer Validation Model",
+      "ruleId": "transfer-validate",
+      "version": 2,
+      "description": "Behavioral model for fund transfer validation rules",
+      "modelType": "rule_based",
+      
+      "inputSignature": {
+        "fromBalance": {
+          "type": "number",
+          "range": {"min": 0, "max": 10000000}
+        },
+        "amount": {
+          "type": "number",
+          "range": {"min": 0.01, "max": 1000000}
+        },
+        "fromAccountStatus": {
+          "type": "string",
+          "values": ["ACTIVE", "FROZEN", "CLOSED"]
+        },
+        "toAccountStatus": {
+          "type": "string",
+          "values": ["ACTIVE", "FROZEN", "CLOSED"]
+        },
+        "dailyTransferTotal": {
+          "type": "number",
+          "range": {"min": 0, "max": 1000000}
+        }
+      },
+      
+      "outputSignature": {
+        "approved": {
+          "type": "boolean"
+        },
+        "rejectionReason": {
+          "type": "string",
+          "values": [null, "INSUFFICIENT_FUNDS", "ACCOUNT_FROZEN", "DAILY_LIMIT_EXCEEDED", "INVALID_ACCOUNT"],
+          "nullable": true
+        }
+      },
+      
+      "invariants": [
+        {
+          "id": "inv-101",
+          "type": "conditional",
+          "description": "Insufficient funds rejection",
+          "expression": "if fromBalance < amount then approved == false and rejectionReason == 'INSUFFICIENT_FUNDS'",
+          "confidence": 1.0,
+          "supportCount": 8234
+        },
+        {
+          "id": "inv-102",
+          "type": "conditional",
+          "description": "Frozen account rejection",
+          "expression": "if fromAccountStatus == 'FROZEN' or toAccountStatus == 'FROZEN' then approved == false and rejectionReason == 'ACCOUNT_FROZEN'",
+          "confidence": 1.0,
+          "supportCount": 1523
+        },
+        {
+          "id": "inv-103",
+          "type": "conditional",
+          "description": "Daily limit exceeded",
+          "expression": "if dailyTransferTotal + amount > 50000 then approved == false and rejectionReason == 'DAILY_LIMIT_EXCEEDED'",
+          "confidence": 0.99,
+          "supportCount": 2341
+        },
+        {
+          "id": "inv-104",
+          "type": "conditional",
+          "description": "Valid transfer approved",
+          "expression": "if fromBalance >= amount and fromAccountStatus == 'ACTIVE' and toAccountStatus == 'ACTIVE' and dailyTransferTotal + amount <= 50000 then approved == true",
+          "confidence": 0.98,
+          "supportCount": 78234
+        }
+      ],
+      
+      "quality": {
+        "dataQuality": 0.97,
+        "patternConsistency": 0.99,
+        "invariantStrength": 0.95,
+        "edgeCaseCoverage": 0.90,
+        "overallConfidence": 0.95
+      },
+      
+      "trainingInfo": {
+        "dataSource": "historical_executions",
+        "startDate": "2023-06-01T00:00:00Z",
+        "endDate": "2024-01-15T00:00:00Z",
+        "sampleCount": 90332,
+        "trainingDuration": 18200
+      }
+    }
+  ]
+}

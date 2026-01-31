@@ -1,0 +1,253 @@
+{
+  "projectId": "banking-demo",
+  "description": "Sample mainframe execution traces for banking system",
+  "traces": [
+    {
+      "id": "trace-001",
+      "transactionId": "ACCT",
+      "programName": "ACCTINQ",
+      "userId": "OPERAT01",
+      "terminalId": "T3270001",
+      "language": "cobol",
+      "startTime": "2024-01-15T09:30:15.000Z",
+      "endTime": "2024-01-15T09:30:15.234Z",
+      "status": "completed",
+      "events": [
+        {
+          "type": "cics",
+          "command": "RECEIVE",
+          "mapName": "ACCTMAP",
+          "timestamp": "2024-01-15T09:30:15.010Z",
+          "data": {
+            "ACCOUNT-NUM": "1234567890",
+            "CUSTOMER-ID": "C00012345"
+          }
+        },
+        {
+          "type": "db2",
+          "statement": "SELECT",
+          "table": "ACCOUNTS",
+          "columns": ["ACCT_NUM", "BALANCE", "STATUS", "OPEN_DATE"],
+          "whereClause": "ACCT_NUM = ?",
+          "hostVariables": {"1": "1234567890"},
+          "rowsAffected": 1,
+          "sqlCode": 0,
+          "timestamp": "2024-01-15T09:30:15.050Z",
+          "duration": 15
+        },
+        {
+          "type": "db2",
+          "statement": "SELECT",
+          "table": "CUSTOMERS",
+          "columns": ["CUST_ID", "NAME", "ADDRESS", "PHONE"],
+          "whereClause": "CUST_ID = ?",
+          "hostVariables": {"1": "C00012345"},
+          "rowsAffected": 1,
+          "sqlCode": 0,
+          "timestamp": "2024-01-15T09:30:15.080Z",
+          "duration": 12
+        },
+        {
+          "type": "cics",
+          "command": "SEND",
+          "mapName": "ACCTDTL",
+          "timestamp": "2024-01-15T09:30:15.200Z",
+          "data": {
+            "ACCOUNT-NUM": "1234567890",
+            "BALANCE": 15234.56,
+            "STATUS": "ACTIVE",
+            "CUSTOMER-NAME": "JOHN DOE"
+          }
+        }
+      ],
+      "metrics": {
+        "totalEvents": 4,
+        "cicsCommands": 2,
+        "db2Statements": 2,
+        "cpuTimeMs": 12,
+        "elapsedTimeMs": 234,
+        "ioCount": 3
+      }
+    },
+    {
+      "id": "trace-002",
+      "transactionId": "TRAN",
+      "programName": "TRANSFR",
+      "userId": "OPERAT02",
+      "terminalId": "T3270002",
+      "language": "cobol",
+      "startTime": "2024-01-15T09:31:00.000Z",
+      "endTime": "2024-01-15T09:31:00.456Z",
+      "status": "completed",
+      "events": [
+        {
+          "type": "cics",
+          "command": "RECEIVE",
+          "mapName": "TRANMAP",
+          "timestamp": "2024-01-15T09:31:00.010Z",
+          "data": {
+            "FROM-ACCT": "1234567890",
+            "TO-ACCT": "0987654321",
+            "AMOUNT": 500.00
+          }
+        },
+        {
+          "type": "db2",
+          "statement": "SELECT",
+          "table": "ACCOUNTS",
+          "columns": ["BALANCE", "STATUS"],
+          "whereClause": "ACCT_NUM = ?",
+          "hostVariables": {"1": "1234567890"},
+          "rowsAffected": 1,
+          "sqlCode": 0,
+          "timestamp": "2024-01-15T09:31:00.050Z"
+        },
+        {
+          "type": "db2",
+          "statement": "UPDATE",
+          "table": "ACCOUNTS",
+          "columns": ["BALANCE"],
+          "whereClause": "ACCT_NUM = ?",
+          "hostVariables": {"1": "1234567890"},
+          "rowsAffected": 1,
+          "sqlCode": 0,
+          "timestamp": "2024-01-15T09:31:00.150Z"
+        },
+        {
+          "type": "db2",
+          "statement": "UPDATE",
+          "table": "ACCOUNTS",
+          "columns": ["BALANCE"],
+          "whereClause": "ACCT_NUM = ?",
+          "hostVariables": {"1": "0987654321"},
+          "rowsAffected": 1,
+          "sqlCode": 0,
+          "timestamp": "2024-01-15T09:31:00.200Z"
+        },
+        {
+          "type": "db2",
+          "statement": "INSERT",
+          "table": "TRANSACTIONS",
+          "columns": ["TRAN_ID", "FROM_ACCT", "TO_ACCT", "AMOUNT", "TRAN_DATE", "STATUS"],
+          "rowsAffected": 1,
+          "sqlCode": 0,
+          "timestamp": "2024-01-15T09:31:00.250Z"
+        },
+        {
+          "type": "cics",
+          "command": "SYNCPOINT",
+          "timestamp": "2024-01-15T09:31:00.400Z"
+        },
+        {
+          "type": "cics",
+          "command": "SEND",
+          "mapName": "TRANRSP",
+          "timestamp": "2024-01-15T09:31:00.450Z",
+          "data": {
+            "STATUS": "SUCCESS",
+            "TRAN-ID": "T2024011500001",
+            "NEW-BALANCE": 14734.56
+          }
+        }
+      ],
+      "metrics": {
+        "totalEvents": 7,
+        "cicsCommands": 3,
+        "db2Statements": 4,
+        "cpuTimeMs": 25,
+        "elapsedTimeMs": 456,
+        "ioCount": 6
+      }
+    },
+    {
+      "id": "trace-003",
+      "transactionId": "CALC",
+      "programName": "INTCALC",
+      "userId": "BATCH",
+      "language": "cobol",
+      "startTime": "2024-01-15T23:00:00.000Z",
+      "endTime": "2024-01-15T23:00:02.100Z",
+      "status": "completed",
+      "batchContext": {
+        "jobName": "NIGHTLY",
+        "stepName": "STEP030",
+        "jobId": "JOB12345"
+      },
+      "events": [
+        {
+          "type": "batch",
+          "event": "STEP_START",
+          "jobName": "NIGHTLY",
+          "stepName": "STEP030",
+          "programName": "INTCALC",
+          "timestamp": "2024-01-15T23:00:00.000Z"
+        },
+        {
+          "type": "vsam",
+          "operation": "OPEN",
+          "fileName": "RATEFL",
+          "fileType": "KSDS",
+          "status": "00",
+          "timestamp": "2024-01-15T23:00:00.050Z"
+        },
+        {
+          "type": "vsam",
+          "operation": "READ",
+          "fileName": "RATEFL",
+          "recordKey": "SAVINGS",
+          "status": "00",
+          "recordData": {
+            "RATE-TYPE": "SAVINGS",
+            "RATE-VALUE": 0.025,
+            "EFFECTIVE-DATE": "2024-01-01"
+          },
+          "timestamp": "2024-01-15T23:00:00.080Z"
+        },
+        {
+          "type": "db2",
+          "statement": "SELECT",
+          "table": "ACCOUNTS",
+          "columns": ["ACCT_NUM", "BALANCE", "ACCT_TYPE"],
+          "whereClause": "ACCT_TYPE = 'SAVINGS' AND STATUS = 'ACTIVE'",
+          "rowsAffected": 15234,
+          "sqlCode": 0,
+          "timestamp": "2024-01-15T23:00:00.500Z"
+        },
+        {
+          "type": "db2",
+          "statement": "UPDATE",
+          "table": "ACCOUNTS",
+          "columns": ["BALANCE", "LAST_INT_DATE"],
+          "whereClause": "ACCT_NUM = ?",
+          "batchCount": 15234,
+          "sqlCode": 0,
+          "timestamp": "2024-01-15T23:00:01.800Z"
+        },
+        {
+          "type": "vsam",
+          "operation": "CLOSE",
+          "fileName": "RATEFL",
+          "status": "00",
+          "timestamp": "2024-01-15T23:00:02.000Z"
+        },
+        {
+          "type": "batch",
+          "event": "STEP_END",
+          "jobName": "NIGHTLY",
+          "stepName": "STEP030",
+          "returnCode": 0,
+          "timestamp": "2024-01-15T23:00:02.100Z"
+        }
+      ],
+      "metrics": {
+        "totalEvents": 7,
+        "db2Statements": 2,
+        "vsamOperations": 3,
+        "recordsProcessed": 15234,
+        "cpuTimeMs": 450,
+        "elapsedTimeMs": 2100,
+        "ioCount": 15240
+      }
+    }
+  ]
+}

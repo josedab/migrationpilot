@@ -1,0 +1,373 @@
+{
+  "id": "kg-banking-demo",
+  "projectId": "banking-demo",
+  "name": "Banking System Knowledge Graph",
+  "description": "Knowledge graph representing the legacy banking system structure, business rules, and data dependencies",
+  "createdAt": "2024-01-15T10:00:00Z",
+  "version": 1,
+  
+  "nodes": [
+    {
+      "id": "prog-acctinq",
+      "type": "program",
+      "name": "ACCTINQ",
+      "description": "Account inquiry transaction - displays account details",
+      "properties": {
+        "language": "COBOL",
+        "linesOfCode": 1250,
+        "complexity": "medium",
+        "transactionId": "ACCT"
+      },
+      "metadata": {
+        "lastModified": "2019-03-15",
+        "author": "LEGACY_TEAM",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "prog-transfr",
+      "type": "program",
+      "name": "TRANSFR",
+      "description": "Fund transfer transaction - transfers money between accounts",
+      "properties": {
+        "language": "COBOL",
+        "linesOfCode": 2100,
+        "complexity": "high",
+        "transactionId": "TRAN"
+      },
+      "metadata": {
+        "lastModified": "2020-06-22",
+        "author": "LEGACY_TEAM",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "prog-intcalc",
+      "type": "program",
+      "name": "INTCALC",
+      "description": "Interest calculation batch program - calculates and applies interest",
+      "properties": {
+        "language": "COBOL",
+        "linesOfCode": 850,
+        "complexity": "medium",
+        "batchJob": "NIGHTLY"
+      },
+      "metadata": {
+        "lastModified": "2018-11-30",
+        "author": "LEGACY_TEAM",
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "proc-validate-balance",
+      "type": "procedure",
+      "name": "VALIDATE-BALANCE",
+      "description": "Validates sufficient balance for transactions",
+      "properties": {
+        "parentProgram": "TRANSFR",
+        "startLine": 450,
+        "endLine": 520
+      }
+    },
+    {
+      "id": "proc-calc-interest",
+      "type": "procedure",
+      "name": "CALC-INTEREST",
+      "description": "Calculates interest based on rate and balance",
+      "properties": {
+        "parentProgram": "INTCALC",
+        "startLine": 200,
+        "endLine": 350
+      }
+    },
+    {
+      "id": "rule-interest-calc",
+      "type": "business-rule",
+      "name": "Interest Calculation",
+      "description": "Calculate interest using: balance * rate * (days/365). Minimum balance of $100 required.",
+      "properties": {
+        "ruleType": "calculation",
+        "formula": "interest = balance * rate * (daysInPeriod / 365)",
+        "conditions": ["balance >= 100", "account.status == 'ACTIVE'"]
+      },
+      "metadata": {
+        "confidence": 0.93,
+        "inferredFrom": "trace-analysis",
+        "validatedBySME": true,
+        "validatedBy": "john.smith@bank.com"
+      }
+    },
+    {
+      "id": "rule-transfer-limit",
+      "type": "business-rule",
+      "name": "Daily Transfer Limit",
+      "description": "Maximum daily transfer limit of $50,000 per account",
+      "properties": {
+        "ruleType": "validation",
+        "limit": 50000,
+        "period": "daily"
+      },
+      "metadata": {
+        "confidence": 0.99,
+        "inferredFrom": "trace-analysis",
+        "validatedBySME": true
+      }
+    },
+    {
+      "id": "rule-balance-check",
+      "type": "business-rule",
+      "name": "Sufficient Balance Check",
+      "description": "Transfer amount must not exceed available balance",
+      "properties": {
+        "ruleType": "validation",
+        "expression": "balance >= amount"
+      },
+      "metadata": {
+        "confidence": 1.0,
+        "inferredFrom": "trace-analysis",
+        "validatedBySME": true
+      }
+    },
+    {
+      "id": "db-accounts",
+      "type": "database",
+      "name": "ACCOUNTS",
+      "description": "Account master table in DB2",
+      "properties": {
+        "database": "DB2",
+        "schema": "BANKDB",
+        "columns": ["ACCT_NUM", "CUST_ID", "BALANCE", "ACCT_TYPE", "STATUS", "OPEN_DATE", "LAST_INT_DATE"],
+        "primaryKey": "ACCT_NUM",
+        "estimatedRows": 5000000
+      }
+    },
+    {
+      "id": "db-customers",
+      "type": "database",
+      "name": "CUSTOMERS",
+      "description": "Customer master table in DB2",
+      "properties": {
+        "database": "DB2",
+        "schema": "BANKDB",
+        "columns": ["CUST_ID", "NAME", "ADDRESS", "PHONE", "EMAIL", "STATUS"],
+        "primaryKey": "CUST_ID",
+        "estimatedRows": 3000000
+      }
+    },
+    {
+      "id": "db-transactions",
+      "type": "database",
+      "name": "TRANSACTIONS",
+      "description": "Transaction history table in DB2",
+      "properties": {
+        "database": "DB2",
+        "schema": "BANKDB",
+        "columns": ["TRAN_ID", "FROM_ACCT", "TO_ACCT", "AMOUNT", "TRAN_DATE", "TRAN_TYPE", "STATUS"],
+        "primaryKey": "TRAN_ID",
+        "estimatedRows": 500000000
+      }
+    },
+    {
+      "id": "file-ratefl",
+      "type": "file",
+      "name": "RATEFL",
+      "description": "Interest rate file (VSAM KSDS)",
+      "properties": {
+        "fileType": "VSAM",
+        "organization": "KSDS",
+        "keyField": "RATE_TYPE",
+        "recordLength": 80,
+        "fields": ["RATE_TYPE", "RATE_VALUE", "EFFECTIVE_DATE", "EXPIRY_DATE"]
+      }
+    },
+    {
+      "id": "data-ws-account",
+      "type": "data-structure",
+      "name": "WS-ACCOUNT-RECORD",
+      "description": "Working storage for account data",
+      "properties": {
+        "level": "01",
+        "size": 200,
+        "fields": [
+          {"name": "WS-ACCT-NUM", "pic": "9(10)"},
+          {"name": "WS-BALANCE", "pic": "S9(11)V99"},
+          {"name": "WS-STATUS", "pic": "X(8)"}
+        ]
+      }
+    },
+    {
+      "id": "reg-sox",
+      "type": "regulation",
+      "name": "SOX Compliance",
+      "description": "Sarbanes-Oxley Act requirements for financial reporting",
+      "properties": {
+        "category": "financial-reporting",
+        "requirements": ["audit-trail", "data-integrity", "access-control"]
+      }
+    }
+  ],
+  
+  "edges": [
+    {
+      "id": "edge-001",
+      "source": "prog-acctinq",
+      "target": "db-accounts",
+      "type": "reads",
+      "properties": {"operation": "SELECT", "frequency": "high"}
+    },
+    {
+      "id": "edge-002",
+      "source": "prog-acctinq",
+      "target": "db-customers",
+      "type": "reads",
+      "properties": {"operation": "SELECT", "frequency": "high"}
+    },
+    {
+      "id": "edge-003",
+      "source": "prog-transfr",
+      "target": "db-accounts",
+      "type": "modifies",
+      "properties": {"operations": ["SELECT", "UPDATE"], "frequency": "high"}
+    },
+    {
+      "id": "edge-004",
+      "source": "prog-transfr",
+      "target": "db-transactions",
+      "type": "writes",
+      "properties": {"operation": "INSERT", "frequency": "high"}
+    },
+    {
+      "id": "edge-005",
+      "source": "prog-transfr",
+      "target": "rule-balance-check",
+      "type": "implements"
+    },
+    {
+      "id": "edge-006",
+      "source": "prog-transfr",
+      "target": "rule-transfer-limit",
+      "type": "implements"
+    },
+    {
+      "id": "edge-007",
+      "source": "prog-transfr",
+      "target": "proc-validate-balance",
+      "type": "contains"
+    },
+    {
+      "id": "edge-008",
+      "source": "proc-validate-balance",
+      "target": "rule-balance-check",
+      "type": "implements"
+    },
+    {
+      "id": "edge-009",
+      "source": "prog-intcalc",
+      "target": "db-accounts",
+      "type": "modifies",
+      "properties": {"operations": ["SELECT", "UPDATE"], "batchSize": 15000}
+    },
+    {
+      "id": "edge-010",
+      "source": "prog-intcalc",
+      "target": "file-ratefl",
+      "type": "reads",
+      "properties": {"operation": "READ"}
+    },
+    {
+      "id": "edge-011",
+      "source": "prog-intcalc",
+      "target": "rule-interest-calc",
+      "type": "implements"
+    },
+    {
+      "id": "edge-012",
+      "source": "prog-intcalc",
+      "target": "proc-calc-interest",
+      "type": "contains"
+    },
+    {
+      "id": "edge-013",
+      "source": "proc-calc-interest",
+      "target": "rule-interest-calc",
+      "type": "implements"
+    },
+    {
+      "id": "edge-014",
+      "source": "rule-interest-calc",
+      "target": "file-ratefl",
+      "type": "depends-on"
+    },
+    {
+      "id": "edge-015",
+      "source": "rule-interest-calc",
+      "target": "db-accounts",
+      "type": "depends-on"
+    },
+    {
+      "id": "edge-016",
+      "source": "rule-balance-check",
+      "target": "db-accounts",
+      "type": "depends-on"
+    },
+    {
+      "id": "edge-017",
+      "source": "rule-transfer-limit",
+      "target": "db-transactions",
+      "type": "depends-on"
+    },
+    {
+      "id": "edge-018",
+      "source": "prog-transfr",
+      "target": "data-ws-account",
+      "type": "uses"
+    },
+    {
+      "id": "edge-019",
+      "source": "db-accounts",
+      "target": "db-customers",
+      "type": "related-to",
+      "properties": {"foreignKey": "CUST_ID"}
+    },
+    {
+      "id": "edge-020",
+      "source": "db-transactions",
+      "target": "reg-sox",
+      "type": "affected-by",
+      "properties": {"requirement": "audit-trail"}
+    },
+    {
+      "id": "edge-021",
+      "source": "rule-interest-calc",
+      "target": "reg-sox",
+      "type": "affected-by",
+      "properties": {"requirement": "data-integrity"}
+    }
+  ],
+  
+  "metadata": {
+    "totalNodes": 14,
+    "totalEdges": 21,
+    "nodeTypes": {
+      "program": 3,
+      "procedure": 2,
+      "business-rule": 3,
+      "database": 3,
+      "file": 1,
+      "data-structure": 1,
+      "regulation": 1
+    },
+    "edgeTypes": {
+      "reads": 3,
+      "writes": 1,
+      "modifies": 2,
+      "implements": 6,
+      "contains": 2,
+      "depends-on": 4,
+      "uses": 1,
+      "related-to": 1,
+      "affected-by": 2
+    },
+    "analysisDate": "2024-01-15T12:00:00Z"
+  }
+}

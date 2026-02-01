@@ -1,0 +1,365 @@
+# MigrationPilot Migration Pipeline
+# 
+# GitHub Actions workflow for automated legacy code migration
+# This pipeline runs analysis, generation, validation, and deployment
+#
+# Trigger manually or on changes to legacy code
+
+name: Migration Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_id:
+        description: 'MigrationPilot Project ID'
+        required: true
+        type: string
+      source_path:
+        description: 'Path to legacy code'
+        required: true
+        type: string
+      target_language:
+        description: 'Target language'
+        required: true
+        type: choice
+        options:
+          - java
+          - python
+          - typescript
+      run_tests:
+        description: 'Run equivalence tests'
+        required: false
+        type: boolean
+        default: true
+      deploy:
+        description: 'Deploy after successful migration'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  MIGRATIONPILOT_API: ${{ secrets.MIGRATIONPILOT_API_URL }}
+  MIGRATIONPILOT_API_KEY: ${{ secrets.MIGRATIONPILOT_API_KEY }}
+  PROJECT_ID: ${{ inputs.project_id }}
+
+jobs:
+  analyze:
+    name: Analyze Legacy Code
+    runs-on: ubuntu-latest
+    outputs:
+      analysis_id: ${{ steps.analyze.outputs.analysis_id }}
+      rules_count: ${{ steps.analyze.outputs.rules_count }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install MigrationPilot CLI
+        run: npm install -g @migrationpilot/cli
+
+      - name: Run Analysis
+        id: analyze
+        run: |
+          echo "📊 Starting legacy code analysis..."
+          
+          result=$(migrationpilot analyze \
+            --project $PROJECT_ID \
+            --path "${{ inputs.source_path }}" \
+            --output json)
+          
+          analysis_id=$(echo "$result" | jq -r '.analysisId')
+          rules_count=$(echo "$result" | jq -r '.rulesCount')
+          
+          echo "analysis_id=$analysis_id" >> $GITHUB_OUTPUT
+          echo "rules_count=$rules_count" >> $GITHUB_OUTPUT
+          
+          echo "✅ Analysis complete"
+          echo "📋 Extracted $rules_count business rules"
+
+      - name: Upload Analysis Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-report
+          path: .migrationpilot/analysis/
+          retention-days: 30
+
+  review-rules:
+    name: Review Business Rules
+    needs: analyze
+    runs-on: ubuntu-latest
+    environment: migration-review
+    
+    steps:
+      - name: Fetch Extracted Rules
+        run: |
+          echo "📋 Fetching extracted business rules..."
+          
+          migrationpilot rules list \
+            --project $PROJECT_ID \
+            --analysis ${{ needs.analyze.outputs.analysis_id }} \
+            --format table
+          
+          echo ""
+          echo "⚠️ Review the extracted rules before proceeding"
+          echo "Rules requiring SME review:"
+          
+          migrationpilot rules list \
+            --project $PROJECT_ID \
+            --analysis ${{ needs.analyze.outputs.analysis_id }} \
+            --filter "confidence<0.9" \
+            --format table
+
+      - name: Check Rule Approval Status
+        run: |
+          pending=$(migrationpilot rules list \
+            --project $PROJECT_ID \
+            --filter "status=pending_review" \
+            --format json | jq -r '.count')
+          
+          if [ "$pending" -gt 0 ]; then
+            echo "::warning::$pending rules pending SME review"
+          fi
+
+  generate:
+    name: Generate Modern Code
+    needs: [analyze, review-rules]
+    runs-on: ubuntu-latest
+    outputs:
+      generation_id: ${{ steps.generate.outputs.generation_id }}
+      files_count: ${{ steps.generate.outputs.files_count }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install MigrationPilot CLI
+        run: npm install -g @migrationpilot/cli
+
+      - name: Generate Modern Code
+        id: generate
+        run: |
+          echo "🔨 Starting code generation..."
+          
+          result=$(migrationpilot migrate \
+            --project $PROJECT_ID \
+            --analysis ${{ needs.analyze.outputs.analysis_id }} \
+            --target ${{ inputs.target_language }} \
+            --output ./generated \
+            --format json)
+          
+          generation_id=$(echo "$result" | jq -r '.generationId')
+          files_count=$(echo "$result" | jq -r '.filesCount')
+          
+          echo "generation_id=$generation_id" >> $GITHUB_OUTPUT
+          echo "files_count=$files_count" >> $GITHUB_OUTPUT
+          
+          echo "✅ Code generation complete"
+          echo "📁 Generated $files_count files"
+
+      - name: Upload Generated Code
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-code
+          path: generated/
+          retention-days: 30
+
+      - name: Generate Code Mapping
+        run: |
+          migrationpilot export mapping \
+            --project $PROJECT_ID \
+            --generation ${{ steps.generate.outputs.generation_id }} \
+            --output ./generated/MAPPING.md \
+            --format markdown
+
+  validate:
+    name: Validate Equivalence
+    needs: [analyze, generate]
+    if: ${{ inputs.run_tests }}
+    runs-on: ubuntu-latest
+    outputs:
+      equivalence_rate: ${{ steps.validate.outputs.equivalence_rate }}
+      tests_passed: ${{ steps.validate.outputs.tests_passed }}
+    
+    services:
+      # Legacy system adapter (if available)
+      legacy-adapter:
+        image: ${{ secrets.LEGACY_ADAPTER_IMAGE }}
+        ports:
+          - 8081:8080
+        options: --health-cmd "curl -f http://localhost:8080/health" --health-interval 10s
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Generated Code
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-code
+          path: generated/
+
+      - name: Setup Test Environment
+        run: |
+          echo "🧪 Setting up test environment..."
+          
+          # Setup based on target language
+          case "${{ inputs.target_language }}" in
+            java)
+              echo "Setting up Java environment"
+              ;;
+            python)
+              pip install -r generated/requirements.txt
+              ;;
+            typescript)
+              cd generated && npm install
+              ;;
+          esac
+
+      - name: Run Equivalence Tests
+        id: validate
+        run: |
+          echo "🧪 Running equivalence tests..."
+          
+          result=$(migrationpilot validate \
+            --project $PROJECT_ID \
+            --generation ${{ needs.generate.outputs.generation_id }} \
+            --legacy-url http://localhost:8081 \
+            --modern-path ./generated \
+            --output json)
+          
+          equivalence_rate=$(echo "$result" | jq -r '.equivalenceRate')
+          tests_passed=$(echo "$result" | jq -r '.testsPassed')
+          tests_failed=$(echo "$result" | jq -r '.testsFailed')
+          
+          echo "equivalence_rate=$equivalence_rate" >> $GITHUB_OUTPUT
+          echo "tests_passed=$tests_passed" >> $GITHUB_OUTPUT
+          
+          echo "✅ Validation complete"
+          echo "📊 Equivalence rate: $equivalence_rate%"
+          echo "✓ Passed: $tests_passed"
+          echo "✗ Failed: $tests_failed"
+          
+          # Fail if equivalence rate is below threshold
+          threshold=95
+          if (( $(echo "$equivalence_rate < $threshold" | bc -l) )); then
+            echo "::error::Equivalence rate ($equivalence_rate%) below threshold ($threshold%)"
+            exit 1
+          fi
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: .migrationpilot/validation/
+          retention-days: 30
+
+      - name: Create Test Summary
+        run: |
+          echo "## Equivalence Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Equivalence Rate | ${{ steps.validate.outputs.equivalence_rate }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Passed | ${{ steps.validate.outputs.tests_passed }} |" >> $GITHUB_STEP_SUMMARY
+
+  deploy:
+    name: Deploy Migration
+    needs: [generate, validate]
+    if: ${{ inputs.deploy && (needs.validate.result == 'success' || needs.validate.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Generated Code
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-code
+          path: generated/
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: migrated code from ${{ inputs.source_path }}"
+          title: "🔄 Migration: ${{ inputs.source_path }} → ${{ inputs.target_language }}"
+          body: |
+            ## Migration Summary
+            
+            **Project:** ${{ inputs.project_id }}
+            **Source:** `${{ inputs.source_path }}`
+            **Target:** ${{ inputs.target_language }}
+            
+            ### Results
+            - Business Rules Extracted: ${{ needs.analyze.outputs.rules_count }}
+            - Files Generated: ${{ needs.generate.outputs.files_count }}
+            - Equivalence Rate: ${{ needs.validate.outputs.equivalence_rate }}%
+            
+            ### Artifacts
+            - [Analysis Report](../actions/runs/${{ github.run_id }})
+            - [Code Mapping](./generated/MAPPING.md)
+            
+            ---
+            *Generated by MigrationPilot*
+          branch: migration/${{ inputs.project_id }}
+          base: main
+          add-paths: |
+            generated/
+
+      - name: Notify Completion
+        run: |
+          echo "🎉 Migration pipeline complete!"
+          echo "A pull request has been created with the migrated code."
+
+  report:
+    name: Generate Report
+    needs: [analyze, generate, validate]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Generate Migration Report
+        run: |
+          echo "## Migration Pipeline Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Project:** ${{ inputs.project_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Source:** \`${{ inputs.source_path }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** ${{ inputs.target_language }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Pipeline Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Analysis | ${{ needs.analyze.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Generation | ${{ needs.generate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Validation | ${{ needs.validate.result }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Send Webhook Notification
+        if: env.WEBHOOK_URL != ''
+        env:
+          WEBHOOK_URL: ${{ secrets.MIGRATION_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "event": "migration.completed",
+              "project_id": "${{ inputs.project_id }}",
+              "source_path": "${{ inputs.source_path }}",
+              "target_language": "${{ inputs.target_language }}",
+              "analysis_result": "${{ needs.analyze.result }}",
+              "generation_result": "${{ needs.generate.result }}",
+              "validation_result": "${{ needs.validate.result }}",
+              "run_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }'

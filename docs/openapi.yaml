@@ -1,0 +1,714 @@
+openapi: 3.1.0
+info:
+  title: MigrationPilot API
+  description: |
+    AI-Powered Legacy Code Modernization Platform API.
+    
+    Transform COBOL, Fortran, and Visual Basic systems into modern, maintainable code 
+    while preserving decades of business logic.
+  version: 0.1.0
+  contact:
+    name: MigrationPilot Support
+    email: support@migrationpilot.dev
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:4000/api/v1
+    description: Local development server
+  - url: https://api.migrationpilot.dev/v1
+    description: Production server
+
+tags:
+  - name: Projects
+    description: Migration project management
+  - name: Analysis
+    description: Legacy code analysis
+  - name: Migration
+    description: Code migration execution
+  - name: Rules
+    description: Business rule management
+  - name: Validation
+    description: Equivalence testing
+  - name: Export
+    description: Documentation export
+  - name: Webhooks
+    description: Webhook management
+  - name: Health
+    description: Service health checks
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      description: Returns service health status
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                  version:
+                    type: string
+                  uptime:
+                    type: number
+
+  /projects:
+    get:
+      tags: [Projects]
+      summary: List projects
+      operationId: listProjects
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ProjectStatus'
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    
+    post:
+      tags: [Projects]
+      summary: Create project
+      operationId: createProject
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, sourceLanguage, targetLanguage]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                description:
+                  type: string
+                sourceLanguage:
+                  $ref: '#/components/schemas/SourceLanguage'
+                targetLanguage:
+                  $ref: '#/components/schemas/TargetLanguage'
+                targetFramework:
+                  type: string
+                settings:
+                  $ref: '#/components/schemas/ProjectSettings'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /projects/{projectId}:
+    get:
+      tags: [Projects]
+      summary: Get project
+      operationId: getProject
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Project'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects/{projectId}/analyze:
+    post:
+      tags: [Analysis]
+      summary: Start analysis
+      description: Analyze legacy code to extract structure and business rules
+      operationId: analyzeProject
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                  description: Specific files to analyze (optional)
+      responses:
+        '202':
+          description: Analysis started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      jobId:
+                        type: string
+                      status:
+                        type: string
+
+  /projects/{projectId}/rules:
+    get:
+      tags: [Rules]
+      summary: List business rules
+      operationId: listRules
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - name: category
+          in: query
+          schema:
+            $ref: '#/components/schemas/RuleCategory'
+        - name: reviewStatus
+          in: query
+          schema:
+            $ref: '#/components/schemas/ReviewStatus'
+        - name: minConfidence
+          in: query
+          schema:
+            type: number
+            minimum: 0
+            maximum: 1
+      responses:
+        '200':
+          description: List of business rules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BusinessRule'
+
+  /projects/{projectId}/rules/{ruleId}/review:
+    post:
+      tags: [Rules]
+      summary: Review business rule
+      operationId: reviewRule
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - name: ruleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  $ref: '#/components/schemas/ReviewStatus'
+                comments:
+                  type: string
+                corrections:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Rule reviewed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/BusinessRule'
+
+  /projects/{projectId}/migrate:
+    post:
+      tags: [Migration]
+      summary: Start migration
+      operationId: startMigration
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dryRun:
+                  type: boolean
+                  default: false
+                phases:
+                  type: array
+                  items:
+                    type: string
+                    enum: [analysis, design, generation, validation]
+      responses:
+        '202':
+          description: Migration started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      jobId:
+                        type: string
+                      streamUrl:
+                        type: string
+                        description: SSE endpoint for progress updates
+
+  /projects/{projectId}/export/github-issues:
+    post:
+      tags: [Export]
+      summary: Export to GitHub Issues
+      description: Create GitHub issues for rules needing review
+      operationId: exportToGitHub
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [repository]
+              properties:
+                repository:
+                  type: string
+                  description: Repository in owner/repo format
+                  example: acme-corp/legacy-migration
+                githubToken:
+                  type: string
+                  description: GitHub PAT (falls back to env)
+                confidenceThreshold:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                  default: 0.9
+                labels:
+                  type: array
+                  items:
+                    type: string
+                assignees:
+                  type: array
+                  items:
+                    type: string
+                dryRun:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Export result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      issuesCreated:
+                        type: integer
+                      issues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            number:
+                              type: integer
+                            url:
+                              type: string
+                            title:
+                              type: string
+
+  /webhooks:
+    get:
+      tags: [Webhooks]
+      summary: List webhooks
+      operationId: listWebhooks
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      responses:
+        '200':
+          description: List of webhooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Webhook'
+                  supportedEvents:
+                    type: array
+                    items:
+                      type: string
+
+    post:
+      tags: [Webhooks]
+      summary: Create webhook
+      operationId: createWebhook
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, events]
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                secret:
+                  type: string
+      responses:
+        '201':
+          description: Webhook created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Webhook'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    projectId:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  schemas:
+    SourceLanguage:
+      type: string
+      enum: [cobol, fortran, vb6, vba, java-legacy]
+    
+    TargetLanguage:
+      type: string
+      enum: [java, python, typescript, go, csharp]
+
+    ProjectStatus:
+      type: string
+      enum:
+        - draft
+        - analyzing
+        - analysis_complete
+        - designing
+        - design_complete
+        - generating
+        - generation_complete
+        - validating
+        - validation_complete
+        - completed
+        - failed
+
+    RuleCategory:
+      type: string
+      enum: [calculation, validation, decision, transformation, workflow, constraint]
+
+    ReviewStatus:
+      type: string
+      enum: [pending, approved, rejected, needs_clarification]
+
+    ProjectSettings:
+      type: object
+      properties:
+        enableStranglerFig:
+          type: boolean
+          default: false
+        generateTests:
+          type: boolean
+          default: true
+        generateDocumentation:
+          type: boolean
+          default: true
+        humanReviewRequired:
+          type: boolean
+          default: true
+        confidenceThreshold:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0.85
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        sourceLanguage:
+          $ref: '#/components/schemas/SourceLanguage'
+        targetLanguage:
+          $ref: '#/components/schemas/TargetLanguage'
+        status:
+          $ref: '#/components/schemas/ProjectStatus'
+        settings:
+          $ref: '#/components/schemas/ProjectSettings'
+        statistics:
+          type: object
+          properties:
+            totalFiles:
+              type: integer
+            totalLines:
+              type: integer
+            extractedRules:
+              type: integer
+            equivalenceScore:
+              type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    BusinessRule:
+      type: object
+      properties:
+        id:
+          type: string
+        projectId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          $ref: '#/components/schemas/RuleCategory'
+        sourceFile:
+          type: string
+        sourceLines:
+          type: array
+          items:
+            type: integer
+        sourceCode:
+          type: string
+        inputs:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+              source:
+                type: string
+        outputs:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+        logic:
+          type: string
+        formula:
+          type: string
+        edgeCases:
+          type: array
+          items:
+            type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        reviewStatus:
+          $ref: '#/components/schemas/ReviewStatus'
+
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        secret:
+          type: string
+          description: Masked, only shown on creation
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        lastTriggeredAt:
+          type: string
+          format: date-time
+        failureCount:
+          type: integer
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build output
+.docusaurus/
+build/
+
+# Package manager lock files (use pnpm-lock.yaml instead)
+package-lock.json
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store

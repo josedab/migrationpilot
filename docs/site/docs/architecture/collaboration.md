@@ -623,6 +623,6 @@ const metrics = await reviewService.getMetrics({
 
 ## Related Topics
 
-- [Business Rules](../concepts/business-rules.md) - Rule extraction details
-- [AI Agents: Archeologist](./agents.md#archeologist-agent) - Rule extraction agent
-- [Dashboard](../guides/using-dashboard.md) - Web dashboard guide
+- [Business Rules](/docs/concepts/business-rules) - Rule extraction details
+- [AI Agents: Archeologist](/docs/architecture/agents#archeologist-agent) - Rule extraction agent
+- [Getting Started](/docs/getting-started/quickstart) - Quick start guide

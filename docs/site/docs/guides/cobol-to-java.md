@@ -351,6 +351,6 @@ migrationpilot validate --project loan-modernization --report validation.json
 
 ## Next Steps
 
-- [Review the generated documentation](./generated-java/docs/business-rules.md)
-- [Set up CI/CD pipeline](../deployment/cloud.md)
-- [Configure monitoring](../deployment/kubernetes.md)
+- [Review business rules](/docs/concepts/business-rules) - Understand extracted rules
+- [Set up CI/CD pipeline](/docs/deployment/cloud) - Cloud deployment guide
+- [Configure monitoring](/docs/deployment/kubernetes) - Kubernetes deployment

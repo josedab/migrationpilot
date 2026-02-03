@@ -87,7 +87,7 @@ Depends on project size:
 
 | Size | Files | Estimated Time |
 |------|-------|----------------|
-| Small | < 50 | Hours |
+| Small | Under 50 | Hours |
 | Medium | 50-500 | Days |
 | Large | 500-5000 | Weeks |
 | Enterprise | 5000+ | Months |
@@ -133,7 +133,7 @@ Equivalence testing verifies that generated code behaves identically to original
 | 95%+ | Excellent - ready for production |
 | 90-95% | Good - minor issues to review |
 | 80-90% | Fair - significant review needed |
-| <80% | Poor - major issues present |
+| Below 80% | Poor - major issues present |
 
 ### Why might tests fail?
 
@@ -255,6 +255,6 @@ Yes! See [Contributing](./contributing.md) for guidelines.
 
 ## Related Topics
 
-- [Troubleshooting](./troubleshooting.md) - Common issues and fixes
-- [Getting Started](./getting-started.md) - Quick start guide
-- [CLI Overview](./cli/overview.md) - Command line reference
+- [Troubleshooting](/docs/troubleshooting) - Common issues and fixes
+- [Getting Started](/docs/getting-started/quickstart) - Quick start guide
+- [CLI Overview](/docs/cli/overview) - Command line reference

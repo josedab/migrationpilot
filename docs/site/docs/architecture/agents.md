@@ -381,6 +381,6 @@ Configure agent behavior in project settings:
 
 ## Related Topics
 
-- [How It Works](./how-it-works.md) - Migration process overview
-- [Business Rules](./business-rules.md) - Rule extraction details
-- [Equivalence Testing](./equivalence-testing.md) - Validation details
+- [How It Works](/docs/concepts/how-it-works) - Migration process overview
+- [Business Rules](/docs/concepts/business-rules) - Rule extraction details
+- [Equivalence Testing](/docs/concepts/equivalence-testing) - Validation details

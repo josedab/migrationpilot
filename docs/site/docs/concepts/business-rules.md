@@ -116,7 +116,7 @@ Each rule receives a confidence score (0-100%):
 | 90-100% | High confidence - AI is certain of interpretation |
 | 70-89% | Medium confidence - Likely correct, review recommended |
 | 50-69% | Low confidence - Requires human verification |
-| <50% | Very low - Manual review required |
+| Below 50% | Very low - Manual review required |
 
 ## Rule Schema
 

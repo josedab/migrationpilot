@@ -534,7 +534,7 @@ migrationpilot trace shadow \
 
 ## Related Topics
 
-- [Mainframe Tracing API](../api/mainframe-tracing.md) - REST API for trace capture
-- [Test Oracle](../api/test-oracle.md) - AI-powered behavioral oracle
-- [Equivalence Testing](./testing.md) - Using traces for validation
-- [CLI: trace](../cli/trace.md) - Command-line tracing tools
+- [Mainframe Tracing API](/docs/api/mainframe-tracing) - REST API for trace capture
+- [Test Oracle](/docs/api/test-oracle) - AI-powered behavioral oracle
+- [Equivalence Testing](/docs/architecture/testing) - Using traces for validation
+- [CLI Overview](/docs/cli/overview) - Command-line tools

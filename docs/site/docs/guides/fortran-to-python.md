@@ -450,6 +450,6 @@ def fast_simpson(y: np.ndarray, h: float) -> float:
 
 ## Next Steps
 
-- [Add API documentation with Swagger](../api/overview.md)
-- [Deploy to cloud](../deployment/cloud.md)
-- [Set up performance benchmarks](./benchmarking.md)
+- [Add API documentation with Swagger](/docs/api/overview) - API reference
+- [Deploy to cloud](/docs/deployment/cloud) - Cloud deployment guide
+- [View benchmarks](/docs/benchmarks) - Performance benchmarks

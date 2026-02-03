@@ -650,7 +650,7 @@ const generator = new SpringGenerator({
 
 ## Related Topics
 
-- [AI Agents: Builder](./agents.md#builder-agent) - Code generation agent
-- [Parsers](./parsers.md) - Input for code generation
-- [Testing](./testing.md) - Validating generated code
-- [CLI: generate](../cli/generate.md) - Command-line generation
+- [AI Agents: Builder](/docs/architecture/agents#builder-agent) - Code generation agent
+- [Parsers](/docs/architecture/parsers) - Input for code generation
+- [Testing](/docs/architecture/testing) - Validating generated code
+- [CLI Migrate](/docs/cli/migrate) - Command-line migration

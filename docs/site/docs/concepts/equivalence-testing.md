@@ -198,10 +198,10 @@ Weighted by:
 
 | Score | Meaning | Recommendation |
 |-------|---------|----------------|
-| ≥99% | Excellent | Ready for production |
+| 99%+ | Excellent | Ready for production |
 | 95-98% | Good | Review failing tests |
 | 90-94% | Fair | Investigate differences |
-| <90% | Poor | Major issues detected |
+| Below 90% | Poor | Major issues detected |
 
 ## Running Validation
 

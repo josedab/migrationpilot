@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="card-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e3a8a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#0ea5e9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#card-bg)"/>
+
+  <!-- Decorative elements -->
+  <circle cx="1100" cy="100" r="200" fill="#1e3a8a" opacity="0.5"/>
+  <circle cx="100" cy="530" r="150" fill="#3b82f6" opacity="0.3"/>
+
+  <!-- Logo icon -->
+  <g transform="translate(80, 200)">
+    <circle cx="60" cy="60" r="55" fill="url(#accent)"/>
+    <path d="M35 60 L65 60 L65 50 L85 60 L65 70 L65 60" fill="#fff"/>
+    <path d="M25 40 L18 60 L25 80" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <path d="M95 40 L102 60 L95 80" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- Title -->
+  <text x="220" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="800" fill="#fff">MigrationPilot</text>
+
+  <!-- Tagline -->
+  <text x="220" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#93c5fd">AI-Powered Legacy Code Modernization</text>
+
+  <!-- Description -->
+  <text x="220" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94a3b8">Transform COBOL, Fortran, and VB6 into modern,</text>
+  <text x="220" y="440" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94a3b8">maintainable code while preserving business logic.</text>
+
+  <!-- Language badges -->
+  <g transform="translate(220, 490)">
+    <rect x="0" y="0" width="90" height="36" rx="6" fill="#3b82f6" opacity="0.3"/>
+    <text x="45" y="24" font-family="monospace" font-size="14" fill="#93c5fd" text-anchor="middle">COBOL</text>
+
+    <rect x="100" y="0" width="90" height="36" rx="6" fill="#3b82f6" opacity="0.3"/>
+    <text x="145" y="24" font-family="monospace" font-size="14" fill="#93c5fd" text-anchor="middle">Fortran</text>
+
+    <rect x="200" y="0" width="70" height="36" rx="6" fill="#3b82f6" opacity="0.3"/>
+    <text x="235" y="24" font-family="monospace" font-size="14" fill="#93c5fd" text-anchor="middle">VB6</text>
+
+    <text x="290" y="24" font-family="system-ui" font-size="20" fill="#60a5fa">→</text>
+
+    <rect x="320" y="0" width="70" height="36" rx="6" fill="#10b981" opacity="0.3"/>
+    <text x="355" y="24" font-family="monospace" font-size="14" fill="#6ee7b7" text-anchor="middle">Java</text>
+
+    <rect x="400" y="0" width="80" height="36" rx="6" fill="#10b981" opacity="0.3"/>
+    <text x="440" y="24" font-family="monospace" font-size="14" fill="#6ee7b7" text-anchor="middle">Python</text>
+
+    <rect x="490" y="0" width="110" height="36" rx="6" fill="#10b981" opacity="0.3"/>
+    <text x="545" y="24" font-family="monospace" font-size="14" fill="#6ee7b7" text-anchor="middle">TypeScript</text>
+  </g>
+
+  <!-- URL -->
+  <text x="1120" y="590" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#64748b" text-anchor="end">migrationpilot.dev</text>
+</svg>

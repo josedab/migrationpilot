@@ -1,0 +1,428 @@
+/* Hero Section */
+.heroBanner {
+  padding: 6rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.heroSubtitle {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.heroButtons .button--secondary {
+  background: #fff;
+  color: #1e3a8a;
+  border: none;
+}
+
+.heroButtons .button--secondary:hover {
+  background: #f0f9ff;
+}
+
+.heroButtons .button--outline {
+  border-color: #fff;
+  color: #fff;
+}
+
+.heroButtons .button--outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.installCommand {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 1rem;
+  color: #fff;
+  gap: 1rem;
+}
+
+.installCommand code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #93c5fd;
+}
+
+.copyButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.copyButton:hover {
+  opacity: 1;
+}
+
+/* Section Styling */
+.sectionTitle {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.sectionSubtitle {
+  text-align: center;
+  font-size: 1.25rem;
+  color: var(--ifm-color-emphasis-600);
+  max-width: 600px;
+  margin: 0 auto 3rem;
+}
+
+/* Feature Grid */
+.features {
+  padding: 5rem 0;
+  background: var(--ifm-background-surface-color);
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.featureCard {
+  background: var(--ifm-card-background-color);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.featureIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.featureCard h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.featureCard p {
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Code Demo Section */
+.demoSection {
+  padding: 5rem 0;
+  background: var(--ifm-background-color);
+}
+
+.codeComparison {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.codeBlock {
+  flex: 1;
+  min-width: 350px;
+  max-width: 500px;
+  background: #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.codeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
+}
+
+.codeLabel {
+  color: #60a5fa;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.fileName {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-family: monospace;
+}
+
+.codeContent {
+  margin: 0;
+  padding: 1.5rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+  overflow-x: auto;
+  background: #1e293b;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  font-size: 2.5rem;
+  color: var(--ifm-color-primary);
+  padding: 0 1rem;
+}
+
+/* Architecture Section */
+.architectureSection {
+  padding: 5rem 0;
+  background: var(--ifm-background-surface-color);
+}
+
+.architectureDiagram {
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+.pipelineFlow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 0;
+  min-width: max-content;
+}
+
+.pipelineStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--ifm-card-background-color);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  min-width: 120px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stepIcon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.stepLabel {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+.stepLanguages {
+  font-size: 0.75rem;
+  color: var(--ifm-color-emphasis-600);
+  text-align: center;
+}
+
+.pipelineArrow {
+  font-size: 1.5rem;
+  color: var(--ifm-color-primary);
+}
+
+/* Language Support Section */
+.languageSection {
+  padding: 5rem 0;
+  background: var(--ifm-background-color);
+}
+
+.languageGrid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4rem;
+  flex-wrap: wrap;
+}
+
+.languageColumn {
+  min-width: 280px;
+}
+
+.languageColumn h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--ifm-color-primary);
+}
+
+.languageArrow {
+  display: flex;
+  align-items: center;
+  font-size: 3rem;
+  color: var(--ifm-color-primary);
+  padding-top: 3rem;
+}
+
+.languageList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.languageList li {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.languageList li:last-child {
+  border-bottom: none;
+}
+
+.languageList strong {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.languageList span {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+/* CTA Section */
+.ctaSection {
+  padding: 5rem 0;
+  text-align: center;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: #fff;
+}
+
+.ctaSection h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.ctaSection p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ctaButtons .button--primary {
+  background: #fff;
+  color: #1e3a8a;
+}
+
+.ctaButtons .button--primary:hover {
+  background: #f0f9ff;
+}
+
+.ctaButtons .button--secondary {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+.ctaButtons .button--secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 996px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.25rem;
+  }
+
+  .sectionTitle {
+    font-size: 2rem;
+  }
+
+  .pipelineFlow {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .pipelineArrow {
+    display: none;
+  }
+
+  .arrow {
+    transform: rotate(90deg);
+  }
+
+  .languageArrow {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroBanner {
+    padding: 3rem 1rem;
+  }
+
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .installCommand {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .codeBlock {
+    min-width: 100%;
+  }
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .featureCard {
+  background: var(--ifm-card-background-color);
+}
+
+[data-theme='dark'] .pipelineStep {
+  background: var(--ifm-card-background-color);
+}
+
+[data-theme='dark'] .languageList li {
+  border-color: var(--ifm-color-emphasis-300);
+}

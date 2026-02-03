@@ -3,6 +3,8 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     'intro',
+    'why-migrationpilot',
+    'benchmarks',
     {
       type: 'category',
       label: 'Getting Started',
@@ -18,6 +20,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'concepts/how-it-works',
         'concepts/ai-agents',
+        'concepts/explainer-agent',
         'concepts/business-rules',
         'concepts/equivalence-testing',
       ],
@@ -30,6 +33,8 @@ const sidebars: SidebarsConfig = {
         'guides/fortran-to-python',
         'guides/vb6-to-typescript',
         'guides/strangler-fig-pattern',
+        'guides/ide-extension',
+        'guides/mainframe-tracing-setup',
       ],
     },
     {
@@ -41,6 +46,7 @@ const sidebars: SidebarsConfig = {
         'architecture/parsers',
         'architecture/generators',
         'architecture/testing',
+        'architecture/differential-testing',
         'architecture/tracing',
         'architecture/rollout',
         'architecture/self-healing',
@@ -56,6 +62,7 @@ const sidebars: SidebarsConfig = {
         'deployment/on-premises',
         'deployment/kubernetes',
         'deployment/security',
+        'deployment/search-setup',
       ],
     },
     {
@@ -85,6 +92,8 @@ const sidebars: SidebarsConfig = {
     },
     'faq',
     'troubleshooting',
+    'contributing',
+    'changelog',
   ],
 };
 

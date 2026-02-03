@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'MigrationPilot',
   tagline: 'AI-Powered Legacy Code Modernization',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   url: 'https://docs.migrationpilot.dev',
   baseUrl: '/',
@@ -21,6 +21,52 @@ const config: Config = {
     locales: ['en'],
   },
 
+  // OpenGraph and Twitter meta tags
+  headTags: [
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:type',
+        content: 'website',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:site_name',
+        content: 'MigrationPilot',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:site',
+        content: '@migrationpilot',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'keywords',
+        content: 'legacy code modernization, COBOL migration, Fortran migration, code transformation, AI code migration, mainframe modernization',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'author',
+        content: 'MigrationPilot Team',
+      },
+    },
+  ],
+
   presets: [
     [
       'classic',
@@ -29,10 +75,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/migrationpilot/migrationpilot/tree/main/docs/site/',
         },
-        blog: {
-          showReadingTime: true,
-          editUrl: 'https://github.com/migrationpilot/migrationpilot/tree/main/docs/site/',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -41,7 +84,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/migrationpilot-social-card.png',
+    image: 'img/migrationpilot-social-card.svg',
     navbar: {
       title: 'MigrationPilot',
       logo: {
@@ -55,8 +98,7 @@ const config: Config = {
           position: 'left',
           label: 'Documentation',
         },
-        {to: '/docs/api', label: 'API Reference', position: 'left'},
-        {to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/docs/api/overview', label: 'API Reference', position: 'left'},
         {
           href: 'https://github.com/migrationpilot/migrationpilot',
           label: 'GitHub',
@@ -70,9 +112,9 @@ const config: Config = {
         {
           title: 'Documentation',
           items: [
-            {label: 'Getting Started', to: '/docs/getting-started'},
-            {label: 'Architecture', to: '/docs/architecture'},
-            {label: 'API Reference', to: '/docs/api'},
+            {label: 'Getting Started', to: '/docs/getting-started/quickstart'},
+            {label: 'Architecture', to: '/docs/architecture/overview'},
+            {label: 'API Reference', to: '/docs/api/overview'},
           ],
         },
         {
@@ -86,7 +128,7 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            {label: 'Blog', to: '/blog'},
+            {label: 'Contributing', to: '/docs/contributing'},
             {label: 'GitHub', href: 'https://github.com/migrationpilot/migrationpilot'},
           ],
         },

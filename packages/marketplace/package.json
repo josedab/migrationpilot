@@ -1,12 +1,20 @@
 {
   "name": "@migrationpilot/marketplace",
   "version": "0.1.0",
-  "description": "Multi-tenant migration marketplace with templates, providers, and monetization",
+  "description": "Multi-tenant marketplace for sharing and monetizing migration patterns and rules",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -15,8 +23,15 @@
   },
   "devDependencies": {
     "typescript": "^5.3.0",
-    "vitest": "^1.0.0"
+    "vitest": "^1.2.0"
   },
-  "keywords": ["migration", "marketplace", "templates", "multi-tenant"],
-  "license": "MIT"
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "marketplace",
+    "multi-tenant",
+    "migration-patterns",
+    "rules-sharing"
+  ]
 }

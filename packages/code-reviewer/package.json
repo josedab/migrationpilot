@@ -1,0 +1,38 @@
+{
+  "name": "@migrationpilot/code-reviewer",
+  "version": "0.1.0",
+  "description": "AI-powered code reviewer that validates changes against extracted business rules",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@migrationpilot/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "code-review",
+    "pr-review",
+    "business-rules",
+    "github",
+    "gitlab"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@migrationpilot/regression-manager",
+  "version": "0.1.0",
+  "description": "Automated regression suite manager for legacy code migration",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@migrationpilot/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "regression-testing",
+    "test-suite",
+    "migration",
+    "test-generation"
+  ]
+}

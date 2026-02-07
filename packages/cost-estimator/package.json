@@ -1,0 +1,39 @@
+{
+  "name": "@migrationpilot/cost-estimator",
+  "version": "0.1.0",
+  "description": "Self-service migration cost estimation engine for instant complexity scoring and cost estimates",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@migrationpilot/core": "workspace:*",
+    "@migrationpilot/parsers": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "migration",
+    "cost-estimation",
+    "cobol",
+    "fortran",
+    "legacy"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@migrationpilot/observability-bridge",
+  "version": "0.1.0",
+  "description": "Mainframe observability bridge for distributed tracing and metrics",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@migrationpilot/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "mainframe",
+    "observability",
+    "opentelemetry",
+    "tracing",
+    "cics",
+    "ims",
+    "db2"
+  ]
+}

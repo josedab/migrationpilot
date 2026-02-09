@@ -20,6 +20,13 @@ import { explainerRoutes } from './routes/explainer.js';
 import { testGeneratorRoutes } from './routes/test-generator.js';
 import { dashboardRoutes } from './routes/dashboard.js';
 import { validationRoutes } from './routes/validation.js';
+import { costEstimatorRoutes } from './routes/cost-estimator.js';
+import { visualizationRoutes } from './routes/visualization.js';
+import { nlQueryRoutes } from './routes/nl-query.js';
+import { codeReviewerRoutes } from './routes/code-reviewer.js';
+import { regressionManagerRoutes } from './routes/regression-manager.js';
+import runtimeEmulatorRoutes from './routes/runtime-emulator.js';
+import observabilityBridgeRoutes from './routes/observability-bridge.js';
 import { graphqlRouter } from './graphql/index.js';
 import { rateLimiter, securityHeaders, auditLogger } from './middleware/index.js';
 
@@ -45,6 +52,13 @@ app.route('/api/explainer', explainerRoutes);
 app.route('/api/tests', testGeneratorRoutes);
 app.route('/api/dashboard', dashboardRoutes);
 app.route('/api/validation', validationRoutes);
+app.route('/api/cost-estimator', costEstimatorRoutes);
+app.route('/api/visualization', visualizationRoutes);
+app.route('/api/nl-query', nlQueryRoutes);
+app.route('/api/code-reviewer', codeReviewerRoutes);
+app.route('/api/regression', regressionManagerRoutes);
+app.route('/api/emulator', runtimeEmulatorRoutes);
+app.route('/api/observability', observabilityBridgeRoutes);
 
 // Metrics endpoint (Prometheus format)
 app.route('/metrics', metricsRoutes);
@@ -71,6 +85,13 @@ app.get('/', (c) => {
       tests: '/api/tests',
       dashboard: '/api/dashboard',
       validation: '/api/validation',
+      'cost-estimator': '/api/cost-estimator',
+      visualization: '/api/visualization',
+      'nl-query': '/api/nl-query',
+      'code-reviewer': '/api/code-reviewer',
+      regression: '/api/regression',
+      emulator: '/api/emulator',
+      observability: '/api/observability',
       metrics: '/metrics',
     },
   });

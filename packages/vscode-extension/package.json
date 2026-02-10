@@ -1,0 +1,148 @@
+{
+  "name": "migrationpilot-vscode",
+  "displayName": "MigrationPilot",
+  "description": "AI-powered legacy code migration assistant for VS Code",
+  "version": "0.1.0",
+  "publisher": "migrationpilot",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "cobol",
+    "legacy",
+    "migration",
+    "ai",
+    "modernization"
+  ],
+  "activationEvents": [
+    "onLanguage:cobol",
+    "onLanguage:fortran",
+    "onLanguage:vb",
+    "onLanguage:java"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "migrationpilot.analyzeFile",
+        "title": "MigrationPilot: Analyze Current File"
+      },
+      {
+        "command": "migrationpilot.extractRules",
+        "title": "MigrationPilot: Extract Business Rules"
+      },
+      {
+        "command": "migrationpilot.suggestMigration",
+        "title": "MigrationPilot: Suggest Migration"
+      },
+      {
+        "command": "migrationpilot.explainCode",
+        "title": "MigrationPilot: Explain Selected Code"
+      },
+      {
+        "command": "migrationpilot.generateTests",
+        "title": "MigrationPilot: Generate Tests"
+      },
+      {
+        "command": "migrationpilot.showKnowledgeGraph",
+        "title": "MigrationPilot: Show Knowledge Graph"
+      },
+      {
+        "command": "migrationpilot.askQuestion",
+        "title": "MigrationPilot: Ask Question About Code"
+      }
+    ],
+    "configuration": {
+      "title": "MigrationPilot",
+      "properties": {
+        "migrationpilot.apiUrl": {
+          "type": "string",
+          "default": "http://localhost:4000/api",
+          "description": "MigrationPilot API server URL"
+        },
+        "migrationpilot.targetLanguage": {
+          "type": "string",
+          "default": "typescript",
+          "enum": ["typescript", "java", "csharp", "python", "go"],
+          "description": "Default target language for migrations"
+        },
+        "migrationpilot.autoAnalyze": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically analyze files on open"
+        },
+        "migrationpilot.showInlineHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline hints for business rules"
+        },
+        "migrationpilot.confidenceThreshold": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum confidence threshold for suggestions"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "migrationpilot",
+          "title": "MigrationPilot",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "migrationpilot": [
+        {
+          "id": "migrationpilot.rules",
+          "name": "Business Rules"
+        },
+        {
+          "id": "migrationpilot.analysis",
+          "name": "Analysis"
+        },
+        {
+          "id": "migrationpilot.migrations",
+          "name": "Migrations"
+        }
+      ]
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "migrationpilot.explainCode",
+          "when": "editorHasSelection",
+          "group": "migrationpilot"
+        },
+        {
+          "command": "migrationpilot.suggestMigration",
+          "when": "editorHasSelection",
+          "group": "migrationpilot"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
